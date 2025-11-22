@@ -66,9 +66,9 @@ This command allows you to interactively choose your configuration options:
 - **Select your style** (e.g., *normal*, *nocolor*, a theme such as *nord*, *catpuccin*, *everforest*, or ASCII-based styles: *ascii* and *ascii-color*).  
 - **Choose the cat size** (small, normal, large) or the ASCII type (keyboard symbols or blocks, which are treated as “size”) for ASCII styles.  
 - **Activate additional commands**:  
-  - `meows-colorscripts-names` displays the list of available cat designs.  
+  - `meow-colorscripts-names` displays the list of available cat designs.  
   - `meow-colorscripts-show [style] [size] [name]` displays the ANSI art for the specified cat design.  
-- **Enable auto-run**: Decide if you want `ansi-meow` to execute automatically when opening a terminal.
+- **Enable auto-run**: Decide if you want `meow-colorscripts` to execute automatically when opening a terminal.
 
 During setup, responses are handled interactively:  
 - In Spanish, answer with **s** (sí) or **n** (no).  
