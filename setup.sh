@@ -1,292 +1,113 @@
 #!/bin/bash
 
-GREEN="\033[38;2;143;188;187m"       # NORD7 – verde/acento
-RED="\033[38;2;59;66;82m"              # NORD1 – gris oscuro (para errores)
-YELLOW="\033[38;2;129;161;193m"        # NORD9 – azul claro (acento)
-CYAN="\033[38;2;136;192;208m"          # NORD8 – cian/acento
-MAGENTA="\033[38;2;94;129;172m"         # NORD10 – azul oscuro
-BLUE="\033[38;2;65;105;225m"            # Azul para prompts
-WHITE="\033[38;2;216;222;233m"          # NORD4 – texto claro
-NC="\033[0m"                          # Reset
+# --- Colores Nord ---
+export TERM=${TERM:-xterm-256color}
+GREEN="\033[38;2;143;188;187m"
+RED="\033[38;2;191;97;106m" # Rojo Nord más auténtico
+YELLOW="\033[38;2;235;203;139m" # Amarillo Nord
+CYAN="\033[38;2;136;192;208m"
+MAGENTA="\033[38;2;180;142;173m"
+BLUE="\033[38;2;129;161;193m"
+NC="\033[0m"
 
+# --- Rutas ---
 CONFIG_DIR="$HOME/.config/meow-colorscripts"
-LANG_FILE="$CONFIG_DIR/lang"
 MEOW_CONF="$CONFIG_DIR/meow.conf"
 BIN_DIR="$HOME/.local/bin"
-LOCAL_REPO="$HOME/meow-colorscripts"
+LOCAL_REPO="$(pwd)"
 
-mkdir -p "$CONFIG_DIR"
+mkdir -p "$CONFIG_DIR" "$BIN_DIR"
 
-if [ -n "$LANG" ]; then
-  LANGUAGE="$LANG"
-elif [ -f "$LANG_FILE" ]; then
-  LANGUAGE=$(cat "$LANG_FILE")
-else
-  LANGUAGE="en"
-fi
-
+# --- Idioma ---
+LANGUAGE=$(cat "$CONFIG_DIR/lang" 2>/dev/null || echo "en")
 
 print_msg() {
-  if [ "$LANGUAGE" = "es" ]; then
-    printf "%b\n" "$1"
-  else
-    printf "%b\n" "$2"
-  fi
+    [ "$LANGUAGE" = "es" ] && printf "%b\n" "$1" || printf "%b\n" "$2"
 }
 
+# --- 1. Selección de Estilo y Tamaño ---
+clear
+print_msg "${CYAN}▸ Elige tu estilo de meow-colorscripts:${NC}" \
+          "${CYAN}▸ Choose your meow-colorscripts style:${NC}"
 
-print_dynamic_message() {
-  local message="$1"
-  local delay=0.2
-  printf "%b" "${MAGENTA}${message}${NC}"
-  for i in {1..3}; do
-    printf "."
-    sleep $delay
-  done
-  printf " %b\n" "${GREEN}${NC}"
-}
-
-
-while true; do
-  if [ "$LANGUAGE" = "es" ]; then
-    printf "%b\n" "${CYAN}▸ Elige tu estilo de meow-colorscripts:${NC}"
-    printf "%b\n" "  ${YELLOW}1) normal${NC}"
-    printf "%b\n" "  ${YELLOW}2) memes${NC}"
-    printf "%b\n" "  ${YELLOW}3) themes (Nord, Catppuccin, Everforest)${NC}"
-    printf "%b\n" "  ${YELLOW}4) (Con tamaño) small${NC}"
-    printf "%b\n" "  ${YELLOW}5) (Con tamaño) normal${NC}"
-    printf "%b" "${BLUE}▸ Selecciona una opción [1-5]: ${NC}"
-    read STYLE_OPTION
-  else
-    printf "%b\n" "${CYAN}▸ Choose your meow-colorscripts style:${NC}"
-    printf "%b\n" "  ${YELLOW}1) normal${NC}"
-    printf "%b\n" "  ${YELLOW}2) memes${NC}"
-    printf "%b\n" "  ${YELLOW}3) themes (Nord, Catppuccin, Everforest)${NC}"
-    printf "%b\n" "  ${YELLOW}4) (With size) small${NC}"
-    printf "%b\n" "  ${YELLOW}5) (With size) normal${NC}"
-    printf "%b" "${BLUE}▸ Select an option [1-5]: ${NC}"
-    read STYLE_OPTION
-  fi
-
-  if [[ ! "$STYLE_OPTION" =~ ^[1-5]$ ]]; then
-    print_msg "${RED}Opción inválida. Intenta nuevamente.${NC}" "${RED}Invalid option. Try again.${NC}"
-    sleep 1
-    clear
-  else
-    break
-  fi
+options=("normal" "memes" "themes (Nord, Catppuccin...)" "small" "normal size")
+for i in "${!options[@]}"; do
+    printf "  ${YELLOW}$((i+1))) ${options[$i]}${NC}\n"
 done
 
+read -p "  $(print_msg "Selecciona [1-5]: " "Select [1-5]: ")" OPT
 
-if [ "$STYLE_OPTION" -eq 3 ]; then
-  while true; do
-    if [ "$LANGUAGE" = "es" ]; then
-      printf "\n%b\n" "${CYAN}▸ ¿Qué tema deseas usar?${NC}"
-      printf "%b\n" "  ${YELLOW}1) nord${NC}"
-      printf "%b\n" "  ${YELLOW}2) catpuccin${NC}"
-      printf "%b\n" "  ${YELLOW}3) everforest${NC}"
-      printf "%b\n" "  ${RED}q) Regresar a la selección de estilos${NC}"
-      printf "%b" "${BLUE}▸ Selecciona una opción [1-3/q]: ${NC}"
-      read THEME_OPTION
-    else
-      printf "\n%b\n" "${CYAN}▸ Which theme do you want?${NC}"
-      printf "%b\n" "  ${YELLOW}1) nord${NC}"
-      printf "%b\n" "  ${YELLOW}2) catpuccin${NC}"
-      printf "%b\n" "  ${YELLOW}3) everforest${NC}"
-      printf "%b\n" "  ${RED}q) Return to style selection${NC}"
-      printf "%b" "${BLUE}▸ Select an option [1-3/q]: ${NC}"
-      read THEME_OPTION
-    fi
+case $OPT in
+    1) MEOW_THEME="normal"; MEOW_SIZE="normal" ;;
+    2) MEOW_THEME="memes";  MEOW_SIZE="normal" ;;
+    3) 
+       print_msg "\n${CYAN}▸ Temas disponibles:${NC}" "${CYAN}▸ Available themes:${NC}"
+       printf "  ${YELLOW}1) nord\n  2) catppuccin\n  3) everforest${NC}\n"
+       read -p "  [1-3]: " T_OPT
+       case $T_OPT in
+           1) MEOW_THEME="nord" ;;
+           2) MEOW_THEME="catppuccin" ;;
+           3) MEOW_THEME="everforest" ;;
+       esac
+       MEOW_SIZE="normal"
+       ;;
+    4) MEOW_THEME="normal"; MEOW_SIZE="small" ;;
+    5) MEOW_THEME="normal"; MEOW_SIZE="normal" ;;
+    *) MEOW_THEME="normal"; MEOW_SIZE="normal" ;;
+esac
 
-    if [ "$THEME_OPTION" = "q" ]; then
-      clear
-      continue 
-    elif [[ ! "$THEME_OPTION" =~ ^[1-3]$ ]]; then
-      print_msg "${RED}Opción inválida. Intenta nuevamente.${NC}" "${RED}Invalid option. Try again.${NC}"
-      sleep 1
-      clear
-    else
-      break
-    fi
-  done
-
-  case "$THEME_OPTION" in
-    1) MEOW_THEME="nord" ;;
-    2) MEOW_THEME="catpuccin" ;;
-    3) MEOW_THEME="everforest" ;;
-    *) MEOW_THEME="nord" ;;  
-  esac
-elif [ "$STYLE_OPTION" -eq 1 ]; then
-  MEOW_THEME="normal"
-elif [ "$STYLE_OPTION" -eq 2 ]; then
-  MEOW_THEME="memes"
-elif [ "$STYLE_OPTION" -eq 4 ]; then
-  MEOW_THEME="normal"
-  MEOW_SIZE="small"
-elif [ "$STYLE_OPTION" -eq 5 ]; then
-  MEOW_THEME="normal"
-  MEOW_SIZE="normal"
-fi
-
-
-if [ -z "$MEOW_SIZE" ]; then
-  MEOW_SIZE="normal"
-fi
-
-
-printf "\n--------------------------------------------------------\n"
-print_msg "Has seleccionado el estilo: ${GREEN}$MEOW_THEME${NC} con tamaño: ${GREEN}$MEOW_SIZE${NC}" \
-          "You have selected the style: ${GREEN}$MEOW_THEME${NC} with size: ${GREEN}$MEOW_SIZE${NC}"
-printf "--------------------------------------------------------\n\n"
-
-
+# --- 2. Guardar Configuración Base ---
 {
-  echo "export MEOW_THEME=\"$MEOW_THEME\""
-  echo "export MEOW_SIZE=\"$MEOW_SIZE\""
+    echo "export MEOW_THEME=\"$MEOW_THEME\""
+    echo "export MEOW_SIZE=\"$MEOW_SIZE\""
 } > "$MEOW_CONF"
-print_msg "${GREEN}▸ La configuración se guardó en $MEOW_CONF${NC}" "${GREEN}▸ Configuration saved in $MEOW_CONF${NC}"
 
+print_msg "\n${GREEN}✓ Estilo: $MEOW_THEME | Tamaño: $MEOW_SIZE${NC}" \
+          "\n${GREEN}✓ Style: $MEOW_THEME | Size: $MEOW_SIZE${NC}"
 
-if [ "$LANGUAGE" = "es" ]; then
-  printf "%b\n" "${CYAN}▸ ¿Deseas activar los comandos 'meow-colorscripts-names' y 'meow-colorscripts-show [nombre]'?${NC}"
-  printf "%b\n" "  ${YELLOW}s) Sí${NC}"
-  printf "%b\n" "  ${YELLOW}n) No${NC}"
-  printf "%b" "${BLUE}▸ Selecciona una opción [s/n]: ${NC}"
-  read COMANDOS_OPTION
-else
-  printf "%b\n" "${CYAN}▸ Do you want to activate the commands 'meow-colorscripts-names' and 'meow-colorscripts-show [name]'?${NC}"
-  printf "%b\n" "  ${YELLOW}y) Yes${NC}"
-  printf "%b\n" "  ${YELLOW}n) No${NC}"
-  printf "%b" "${BLUE}▸ Select an option [y/n]: ${NC}"
-  read COMANDOS_OPTION
-fi
+# --- 3. Activación de Comandos Extra (names / show) ---
+print_msg "\n${CYAN}▸ ¿Activar comandos extra (names/show)? [s/n]:${NC}" \
+          "\n${CYAN}▸ Activate extra commands (names/show)? [y/n]:${NC}"
+read -p "  > " EXTRA_OPT
 
-if [[ "$COMANDOS_OPTION" =~ ^[sSyY]$ ]]; then
-  if [ -f "$CONFIG_DIR/names.txt" ]; then
-    print_msg "${GREEN}Archivo 'names.txt' encontrado en la configuración.${NC}" "${GREEN}'names.txt' found in configuration.${NC}"
-  else
-    print_msg "${RED}No se encontró 'names.txt' en la configuración.${NC}" "${RED}'names.txt' not found in configuration.${NC}"
-  fi
-  installed_commands=()
-  {
-    echo "#!/bin/bash"
-    echo "cat $CONFIG_DIR/names.txt"
-  } > "$HOME/.local/bin/meow-colorscripts-names"
-  chmod +x "$HOME/.local/bin/meow-colorscripts-names"
-  installed_commands+=( "meow-colorscripts-names" )
-  
-  if [ -f "$CONFIG_DIR/meow-colorscripts-show.sh" ]; then
-    install -Dm755 "$CONFIG_DIR/meow-colorscripts-show.sh" "$HOME/.local/bin/meow-colorscripts-show"
-    installed_commands+=( "meow-colorscripts-show" )
-  elif [ -f "$LOCAL_REPO/meow-colorscripts-show.sh" ]; then
-    install -Dm755 "$LOCAL_REPO/meow-colorscripts-show.sh" "$HOME/.local/bin/meow-colorscripts-show"
-    installed_commands+=( "meow-colorscripts-show" )
-  else
-    print_msg "${RED}No se encontró 'meow-colorscripts-show.sh'.${NC}" "${RED}'meow-colorscripts-show.sh' not found.${NC}"
-  fi
-  if [ ${#installed_commands[@]} -gt 0 ]; then
-    print_msg "${GREEN}Comando(s) ${installed_commands[*]} instalado(s) correctamente.${NC}" \
-              "${GREEN}Command(s) ${installed_commands[*]} installed successfully.${NC}"
-  fi
-fi
-
-
-if [ "$LANGUAGE" = "es" ]; then
-  printf "\n%b\n" "${CYAN}▸ ¿Deseas activar el autorun de meow-colorscripts al iniciar la terminal?${NC}"
-  printf "%b\n" "  ${YELLOW}s) Sí${NC}"
-  printf "%b\n" "  ${YELLOW}n) No${NC}"
-  printf "%b" "${BLUE}▸ Selecciona una opción [s/n]: ${NC}"
-  read AUTORUN_OPTION
-else
-  printf "\n%b\n" "${CYAN}▸ Do you want to enable autorun for meow-colorscripts on terminal startup?${NC}"
-  printf "%b\n" "  ${YELLOW}y) Yes${NC}"
-  printf "%b\n" "  ${YELLOW}n) No${NC}"
-  printf "%b" "${BLUE}▸ Select an option [y/n]: ${NC}"
-  read AUTORUN_OPTION
-fi
-
-if [[ "$AUTORUN_OPTION" =~ ^[sSyY]$ ]]; then
-  MEOW_AUTORUN="true"
-  CURRENT_SHELL=$(basename "$SHELL")
-  case "$CURRENT_SHELL" in
-    fish)
-      SHELL_CONFIG="$HOME/.config/fish/config.fish"
-      grep -q "^meow-colorscripts" "$SHELL_CONFIG" || echo "meow-colorscripts" >> "$SHELL_CONFIG"
-      ;;
-    bash)
-      SHELL_CONFIG="$HOME/.bashrc"
-      grep -q "^meow-colorscripts" "$SHELL_CONFIG" || echo "meow-colorscripts" >> "$SHELL_CONFIG"
-      ;;
-    zsh)
-      SHELL_CONFIG="$HOME/.zshrc"
-      grep -q "^meow-colorscripts" "$SHELL_CONFIG" || echo "meow-colorscripts" >> "$SHELL_CONFIG"
-      ;;
-    *)
-      SHELL_CONFIG="$HOME/.profile"
-      grep -q "^meow-colorscripts" "$SHELL_CONFIG" || echo "meow-colorscripts" >> "$SHELL_CONFIG"
-      ;;
-  esac
-  print_msg "${GREEN}Autorun activado.${NC}" "${GREEN}Autorun enabled.${NC}"
-else
-  MEOW_AUTORUN="false"
-fi
-
-
-mkdir -p "$HOME/.local/bin"
-
-if [ "$LANGUAGE" = "es" ]; then
-  printf "\n%b\n" "${CYAN}▸ ¿Deseas activar el comando meow-fact? (s/n): ${NC}"
-  printf "%b\n" "  ${YELLOW}s) Sí${NC}"
-  printf "%b\n" "  ${YELLOW}n) No${NC}"
-else
-  printf "\n%b\n" "${CYAN}▸ Do you want to activate the meow-fact command? (y/n): ${NC}"
-  printf "%b\n" "  ${YELLOW}y) Yes${NC}"
-  printf "%b\n" "  ${YELLOW}n) No${NC}"
-fi
-
-read activate_response
-
-if [[ "$activate_response" =~ ^(s|S|y|Y)$ ]]; then
-  # Buscar el archivo en dos posibles nombres:
-  if [ -f "$HOME/meow-colorscripts/meow-fact.sh" ]; then
-    TARGET="$HOME/meow-colorscripts/meow-fact.sh"
-  elif [ -f "$HOME/meow-colorscripts/meow-fact" ]; then
-    TARGET="$HOME/meow-colorscripts/meow-fact"
-  else
-    TARGET=""
-  fi
-
-  if [ -n "$TARGET" ]; then
-    mv "$TARGET" "$HOME/.local/bin/meow-fact"
-    chmod +x "$HOME/.local/bin/meow-fact"
-    if [ "$LANGUAGE" = "es" ]; then
-      printf "%b\n" "${GREEN}▸ El comando meow-fact ha sido activado exitosamente.${NC}"
-    else
-      printf "%b\n" "${GREEN}▸ The meow-fact command has been successfully activated.${NC}"
+if [[ "$EXTRA_OPT" =~ ^[sSyY]$ ]]; then
+    # meow-colorscripts-names
+    echo -e "#!/bin/bash\nls $CONFIG_DIR/colorscripts/$MEOW_THEME/$MEOW_SIZE | sed 's/.txt//'" > "$BIN_DIR/meow-colorscripts-names"
+    chmod +x "$BIN_DIR/meow-colorscripts-names"
+    
+    # meow-colorscripts-show
+    if [ -f "$LOCAL_REPO/meow-colorscripts-show.sh" ]; then
+        install -Dm755 "$LOCAL_REPO/meow-colorscripts-show.sh" "$BIN_DIR/meow-colorscripts-show"
+        print_msg "${GREEN}✓ Comandos instalados.${NC}" "${GREEN}✓ Commands installed.${NC}"
     fi
-  else
-    if [ "$LANGUAGE" = "es" ]; then
-      printf "%b\n" "${RED}▸ No se encontró ni 'meow-fact.sh' ni 'meow-fact' en ~/meow-colorscripts.${NC}"
-    else
-      printf "%b\n" "${RED}▸ Could not find 'meow-fact.sh' or 'meow-fact' in ~/meow-colorscripts.${NC}"
-    fi
-  fi
-else
-  if [ "$LANGUAGE" = "es" ]; then
-    printf "%b\n" "${YELLOW}▸ El comando meow-fact no se activará.${NC}"
-  else
-    printf "%b\n" "${YELLOW}▸ The meow-fact command will not be activated.${NC}"
-  fi
 fi
 
+# --- 4. Autorun (Mejorado para no duplicar) ---
+print_msg "\n${CYAN}▸ ¿Activar autorun al abrir terminal? [s/n]:${NC}" \
+          "\n${CYAN}▸ Enable autorun on startup? [y/n]:${NC}"
+read -p "  > " AUTO_OPT
 
-printf "\n%b\n" "${YELLOW} Recuerda: usa 'meow-colorscripts-show' para ver arte específico y 'meow-colorscripts-names' para consultar nombres.${NC}"
-printf "%b\n" "${YELLOW} Reinicia tu terminal para que los cambios surtan efecto.${NC}"
-printf "\n%b\n" "${MAGENTA}¡Miau! Configuración guardada exitosamente.${NC}\n"
+if [[ "$AUTO_OPT" =~ ^[sSyY]$ ]]; then
+    SHELL_RC="$HOME/.$(basename $SHELL)rc"
+    if [ -f "$SHELL_RC" ]; then
+        grep -q "meow-colorscripts" "$SHELL_RC" || echo -e "\n# Meow Colorscripts Autorun\nmeow-colorscripts --random" >> "$SHELL_RC"
+        print_msg "${GREEN}✓ Autorun añadido a $SHELL_RC${NC}" "${GREEN}✓ Autorun added to $SHELL_RC${NC}"
+    fi
+    echo "export MEOW_AUTORUN=\"true\"" >> "$MEOW_CONF"
+else
+    echo "export MEOW_AUTORUN=\"false\"" >> "$MEOW_CONF"
+fi
 
+# --- 5. Meow-Fact (Opcional) ---
+print_msg "\n${CYAN}▸ ¿Instalar meow-fact? [s/n]:${NC}" \
+          "\n${CYAN}▸ Install meow-fact? [y/n]:${NC}"
+read -p "  > " FACT_OPT
 
-{
-  echo "export MEOW_THEME=\"$MEOW_THEME\""
-  echo "export MEOW_SIZE=\"$MEOW_SIZE\""
-  echo "export MEOW_AUTORUN=\"$MEOW_AUTORUN\""
-} > "$MEOW_CONF"
+if [[ "$FACT_OPT" =~ ^[sSyY]$ ]]; then
+    FACT_SRC="$LOCAL_REPO/meow-fact.sh"
+    [ -f "$FACT_SRC" ] && install -Dm755 "$FACT_SRC" "$BIN_DIR/meow-fact" && print_msg "${GREEN}✓ meow-fact listo.${NC}" "${GREEN}✓ meow-fact ready.${NC}"
+fi
+
+# --- Finalización ---
+print_msg "\n${MAGENTA}¡Miau! Configuración guardada en $MEOW_CONF${NC}" \
+          "\n${MAGENTA}Meow! Configuration saved to $MEOW_CONF${NC}"
