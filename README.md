@@ -1,8 +1,8 @@
-󰄛 Custom Colorscripts
+🎨 Custom Colorscripts
 
 A collection of custom ANSI pixel art. Give your terminal a unique personality every time you open a new session.
 
-󰏘 Features
+⚙️ Features
 • Dynamic Themes: Native support for Nord, Catppuccin, Everforest, and more.
 
 • Smart Resizing: Available in `small`, `normal`, and `big` versions to fit any window size.
@@ -13,12 +13,12 @@ A collection of custom ANSI pixel art. Give your terminal a unique personality e
 
 • Custom Colorscripts: You can add custom colorscripts if you want.
 
-󰆍 Requirements
+❔ Requirements
 • A terminal emulator with 256-color or True Color support.
 
 • Nerd Fonts(https://www.nerdfonts.com/) installed (recommended for UI icons).
 
-󰏗 Installation
+⬇️ Installation
 Cloning the repository and running the installer is all you need:
 
 ```
@@ -34,8 +34,7 @@ chmod +x install.sh setup.sh
 ```
 
 Note: The installer automatically manages your PATH in `~/.zshrc`, `~/.bashrc`, or `~/.config/fish/config.fish`. Please restart your terminal after the process is finished.
-
-󰒓 Setup
+🖥️ Setup
 To select settings, like enable terminal startup autorun run:
 
 ```
@@ -49,8 +48,8 @@ cd custom-colorscripts
 
 ```
 
-󰭟 Available Commands
-󰄛 Manual Usage Example
+🔧 Available Commands
+🧾 Manual Usage Example
 If you want to display a specific cat (e.g., the `raspi` model in `normal` size with the `normal` style):
 
 ```
@@ -59,7 +58,7 @@ custom-colorscripts-show normal normal raspi
 
 ```
 
-󰚚 Credits
+📜 Credits
 (Pokemon-Colorscripts)[https://gitlab.com/phoneybadger/pokemon-colorscripts]
 Me! :P
 
