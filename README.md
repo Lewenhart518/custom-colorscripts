@@ -60,6 +60,9 @@ custom-colorscripts-show normal normal raspi
 
 📜 Credits
 (Pokemon-Colorscripts)[https://gitlab.com/phoneybadger/pokemon-colorscripts]
+
+and
+
 Me! :P
 
 ---
