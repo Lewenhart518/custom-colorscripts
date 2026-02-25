@@ -1,109 +1,170 @@
 #!/bin/bash
 
-# --- Configuración de Colores Nord ---
+#────────────────────────────────────────────────────────── Color Section ─────
+
 export TERM=${TERM:-xterm-256color}
-NORD0="\033[38;2;46;52;64m";  NORD4="\033[38;2;216;222;233m"
-NORD7="\033[38;2;143;188;187m"; NORD8="\033[38;2;136;192;208m"
-NORD9="\033[38;2;129;161;193m"; NORD10="\033[38;2;94;129;172m"
 
-GREEN="$NORD7"; RED="\033[31m"; YELLOW="$NORD9"
-CYAN="$NORD8"; MAGENTA="$NORD10"; NC='\033[0m'
+NORD0="\033[38;2;46;52;64m"
+NORD1="\033[38;2;59;66;82m"
+NORD7="\033[38;2;143;188;187m"
+NORD8="\033[38;2;136;192;208m"
+NORD9="\033[38;2;129;161;193m"
+NORD10="\033[38;2;94;129;172m"
 
-# --- Variables de Ruta ---
-CONFIG_DIR="$HOME/.config/meow-colorscripts"
-BIN_DIR="$HOME/.local/bin"
-LOCAL_REPO="$(pwd)" # Asumimos que se ejecuta desde el repo clonado
+GREEN="$NORD7"
+RED="$NORD1"
+YELLOW="$NORD9"
+CYAN="$NORD8"
+MAGENTA="$NORD10"
+NC='\033[0m'
 
-# --- Funciones de Utilidad ---
+#────────────────────────────────────────────────────── Utility Functions ─────
+
 print_msg() {
-    [ "$LANGUAGE" = "es" ] && printf "%b\n" "$1" || printf "%b\n" "$2"
+  if [ "$LANGUAGE" = "es" ]; then
+    printf -- "%b\n" "$1"
+  else
+    printf -- "%b\n" "$2"
+  fi
 }
 
-print_step() {
-    local msg="$1"
-    printf "%b" "${MAGENTA}${msg}${NC}"
-    for i in {1..3}; do printf "."; sleep 0.1; done
-    printf " ${GREEN}${NC}\n"
+print_dynamic_message() {
+  local msg_es="$1"
+  local msg_en="$2"
+  local message
+  [ "$LANGUAGE" = "es" ] && message="$msg_es" || message="$msg_en"
+  
+  local delay=0.1
+  printf "%b" "${MAGENTA}${message}${NC}"
+  for i in {1..3}; do
+    printf "."
+    sleep $delay
+  done
+  printf " %b\n" "${GREEN}${NC}"
 }
 
-# --- 1. Selección de Idioma ---
+#───────────────────────────────────────────────────────── Path Variables ─────
+
+CONFIG_DIR="$HOME/.config/custom-colorscripts"
+BIN_DIR="$HOME/.local/bin"
+LOCAL_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+#────────────────────────────────────────────────────── Language Selector ─────
+
 clear
-printf "${CYAN}▸ Select your language / Selecciona tu idioma:${NC}\n"
-printf "  ${YELLOW}1) Español${NC}\n  ${YELLOW}2) English${NC}\n"
-read -p "  Choose [1/2]: " LANG_OPTION
-LANGUAGE="en"; [[ "$LANG_OPTION" == "1" ]] && LANGUAGE="es"
+printf "\n${CYAN}▸   Select your language / Selecciona tu idioma:${NC}\n"
+printf "  ${YELLOW}1) Español${NC}\n"
+printf "  ${YELLOW}2) English${NC}\n"
+printf "${MAGENTA}▸ Choose an option [1/2]: ${NC}"
+read LANG_OPTION
+
+LANGUAGE="en"
+[ "$LANG_OPTION" == "1" ] && LANGUAGE="es"
 
 mkdir -p "$CONFIG_DIR"
 echo "$LANGUAGE" > "$CONFIG_DIR/lang"
-print_msg "¡Miaunífico! Idioma establecido." "Meow-tastic! Language set."
 
-# --- 2. Preparación del Entorno ---
-print_step "$(print_msg "Creando directorios" "Creating directories")"
+print_msg "${GREEN}¡Idioma establecido!${NC}" "${GREEN}Language set!${NC}"
+
+#─────────────────────────────────────────────────────── Repository Check ─────
+
+# Mover la carpeta de de .config a ~/
+if [ -d "$LOCAL_REPO/.config/custom-colorscripts" ]; then
+    print_dynamic_message "Sincronizando archivos de configuración" "Syncing configuration files"
+    # Sincroniza todo (incluyendo la carpeta colorscripts/ y el archivo names.txt)
+    cp -rp "$LOCAL_REPO/.config/custom-colorscripts/"* "$CONFIG_DIR/"
+else
+    print_msg "${RED}✖ Error: No se encontró la carpeta .config en el repositorio.${NC}" \
+              "${RED}✖ Error: .config folder not found in repository.${NC}"
+fi
+
+find "$LOCAL_REPO" -type f -name "*.sh" -exec chmod +x {} \;
+
+#──────────────────────────────────────────────────────────── PATH Update ─────
+
 mkdir -p "$BIN_DIR"
-mkdir -p "$CONFIG_DIR/colorscripts"
-
-# --- 3. Instalación del Motor Principal (v2.0 con Search) ---
-print_step "$(print_msg "Instalando motor principal" "Installing main engine")"
-
-cat << 'EOF' > "$BIN_DIR/meow-colorscripts"
-#!/bin/bash
-CONFIG_DIR="$HOME/.config/meow-colorscripts"
-ART_DIR="$CONFIG_DIR/colorscripts"
-
-show_help() {
-    echo "MEOW-COLORSCRIPTS v2.0"
-    echo "Usage: meow-colorscripts [OPTION]"
-    echo "  -s, --search [style] [size] [name]  Search for a specific cat"
-    echo "  -r, --random                        Show a random cat"
-    echo "  -l, --list                          List all available cats"
-    exit 0
-}
-
-case "$1" in
-    -s|--search)
-        FILE="$ART_DIR/$2/$3/$4.txt"
-        [ -f "$FILE" ] && cat "$FILE" || echo "Error: Cat not found in $2/$3/$4"
-        ;;
-    -r|--random)
-        # Busca cualquier .txt en la estructura de carpetas
-        RANDOM_CAT=$(find "$ART_DIR" -name "*.txt" | shuf -n 1)
-        [ -f "$RANDOM_CAT" ] && cat "$RANDOM_CAT"
-        ;;
-    -l|--list)
-        echo "Available Cats (Style/Size/Name):"
-        find "$ART_DIR" -name "*.txt" | sed "s|$ART_DIR/||" | sed 's|.txt||'
-        ;;
-    *) show_help ;;
-esac
-EOF
-chmod +x "$BIN_DIR/meow-colorscripts"
-
-# --- 4. Migración de Arte ---
-if [ -d "$LOCAL_REPO/colorscripts" ]; then
-    cp -r "$LOCAL_REPO/colorscripts/"* "$CONFIG_DIR/colorscripts/"
-    print_step "$(print_msg "Arte miauctualizado" "Art miauctualized")"
-fi
-
-# --- 5. Configuración del PATH ---
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-    SHELL_RC="$HOME/.$(basename $SHELL)rc"
-    [ -f "$SHELL_RC" ] && echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$SHELL_RC"
-    print_step "PATH actualizado en $SHELL_RC"
+  CURRENT_SHELL=$(basename "$SHELL")
+  case "$CURRENT_SHELL" in
+    bash) echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc" ;;
+    zsh)  echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc" ;;
+    fish) fish -c "set -U fish_user_paths $BIN_DIR \$fish_user_paths" ;;
+    *)    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.profile" ;;
+  esac
+  export PATH="$BIN_DIR:$PATH"
 fi
 
-# --- 6. Instalación de Scripts Adicionales (Update/Uninstall) ---
-for tool in update setup uninstall; do
-    if [ -f "$LOCAL_REPO/$tool.sh" ]; then
-        install -Dm755 "$LOCAL_REPO/$tool.sh" "$BIN_DIR/meow-colorscripts-$tool"
-        print_step "meow-colorscripts-$tool instalado"
-    fi
-done
+print_dynamic_message "PATH actualizado" "PATH updated"
 
-# --- 7. Finalización ---
-echo -e "\n${CYAN}==========================================${NC}"
-print_msg "¡Instalación completada!" "Installation complete!"
-print_msg "Prueba: meow-colorscripts --random" "Try: meow-colorscripts --random"
-echo -e "${CYAN}==========================================${NC}"
+#──────────────────────────────────────────────────────── Binary Installs ─────
 
-read -p "$(print_msg "¿Configurar ahora? [s/n]: " "Setup now? [y/n]: ")" RUN_CONF
-[[ "$RUN_CONF" =~ ^[sSyY]$ ]] && "$BIN_DIR/meow-colorscripts-setup"
+# 1. Main Script (the script thath shows the colorscripts) :)
+if [ -f "$CONFIG_DIR/main.sh" ]; then
+  install -Dm755 "$CONFIG_DIR/main.sh" "$BIN_DIR/custom-colorscripts"
+  print_dynamic_message "Comando principal instalado" "Main command installed"
+else
+  print_msg "${RED}✖ Error: main.sh no encontrado.${NC}" "${RED}✖ Error: main.sh not found.${NC}"
+fi
+
+# 2. Update Script
+if [ -f "$LOCAL_REPO/update.sh" ]; then
+  install -Dm755 "$LOCAL_REPO/update.sh" "$BIN_DIR/custom-colorscripts-update"
+  print_dynamic_message "custom-colorscripts-update instalado" "custom-colorscripts-update installed"
+fi
+
+# 3. Setup Script
+if [ -f "$LOCAL_REPO/setup.sh" ]; then
+  install -Dm755 "$LOCAL_REPO/setup.sh" "$BIN_DIR/custom-colorscripts-setup"
+  print_dynamic_message "custom-colorscripts-setup instalado" "custom-colorscripts-setup installed"
+fi
+
+# 4. Show Script
+if [ -f "$LOCAL_REPO/show.sh" ]; then
+
+  install -Dm755 "$LOCAL_REPO/show.sh" "$BIN_DIR/custom-colorscripts-show"
+  print_dynamic_message "custom-colorscripts-show instalado" "custom-colorscripts-show installed"
+fi
+
+# 5. Names Script
+cat << 'EOF' > "$BIN_DIR/custom-colorscripts-names"
+#!/bin/bash
+CONFIG_DIR="$HOME/.config/custom-colorscripts"
+NAME_FILE="$CONFIG_DIR/names.txt"
+if [ -f "$NAME_FILE" ]; then
+    cat "$NAME_FILE"
+else
+    # Respaldo
+    ls "$CONFIG_DIR/colorscripts/normal/normal" 2>/dev/null | sed 's/\.txt//'
+fi
+EOF
+chmod +x "$BIN_DIR/custom-colorscripts-names"
+print_dynamic_message "custom-colorscripts-names instalado" "custom-colorscripts-names installed"
+
+# 6. Uninstall Script
+if [ -f "$LOCAL_REPO/uninstall.sh" ]; then
+  install -Dm755 "$LOCAL_REPO/uninstall.sh" "$BIN_DIR/custom-colorscripts-uninstall"
+  print_dynamic_message "custom-colorscripts-uninstall instalado" "custom-colorscripts-uninstall installed"
+fi
+
+#────────────────────────────────────────────────────────── Finalization ─────
+
+printf "\n"
+print_msg "${YELLOW} Reinicia tu terminal para aplicar los cambios de PATH.${NC}" \
+          "${YELLOW} Restart your terminal to apply PATH changes.${NC}"
+
+if [ "$LANGUAGE" = "es" ]; then
+  printf "${CYAN}▸ ¿Deseas iniciar la configuración ahora? [s/n]: ${NC}"
+else
+  printf "${CYAN}▸ Do you want to start the setup now? [y/n]: ${NC}"
+fi
+
+read RUN_CONFIG
+if [[ "$RUN_CONFIG" =~ ^[sSyY]$ ]]; then
+  "$BIN_DIR/custom-colorscripts-setup"
+fi
+
+printf "\n${MAGENTA}"
+print_msg "Instalación completada exitosamente." "Installation completed successfully."
+printf "${NC}\n"
+
+#hi
