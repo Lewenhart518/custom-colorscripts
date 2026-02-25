@@ -1,12 +1,12 @@
 #!/bin/bash
 
 LANGUAGE="en"
-LANG_FILE="$HOME/.config/meow-colorscripts/lang"
+LANG_FILE="$HOME/.config/custom-colorscripts/lang"
 if [ -f "$LANG_FILE" ]; then
     LANGUAGE=$(cat "$LANG_FILE")
 fi
 
-# Función para solicitar confirmación (usa mensajes según idioma)
+
 ask_confirmation() {
     if [[ "$LANGUAGE" == "es" ]]; then
         read -p "$1 [s/n]: " RESPONSE
@@ -25,16 +25,16 @@ ask_confirmation() {
 
 
 if [[ "$LANGUAGE" == "es" ]]; then
-    echo -e "\n Iniciando desinstalación de meow-colorscripts..."
+    echo -e "\n Iniciando desinstalación de custom-colorscripts..."
 else
-    echo -e "\n Starting uninstallation of meow-colorscripts..."
+    echo -e "\n Starting uninstallation of custom-colorscripts..."
 fi
 
 
 if [[ "$LANGUAGE" == "es" ]]; then
-    ask_confirmation "¿Estás seguro de que deseas desinstalar meow-colorscripts?"
+    ask_confirmation "¿Estás seguro de que deseas desinstalar custom-colorscripts?"
 else
-    ask_confirmation "Are you sure you want to uninstall meow-colorscripts?"
+    ask_confirmation "Are you sure you want to uninstall custom-colorscripts?"
 fi
 
 
@@ -52,9 +52,9 @@ if ls "$BIN_DIR"/*meow* 1> /dev/null 2>&1; then
     done
 else
     if [[ "$LANGUAGE" == "es" ]]; then
-        echo -e " No se encontraron comandos con 'meow' en su nombre en $BIN_DIR."
+        echo -e " No se encontraron comandos con '' en su nombre en $BIN_DIR."
     else
-        echo -e " No commands with 'meow' in their name found in $BIN_DIR."
+        echo -e " No commands with '' in their name found in $BIN_DIR."
     fi
 fi
 
