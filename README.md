@@ -12,7 +12,7 @@ A collection of custom ANSI pixel art. Give your terminal a unique personality e
 - [Command list](#command-list)
 - [How use the commands](#How-use-the-commands)
 - [View Available Cats](#view-available-cats)
-- [Custom](#Custom-meows)
+- [Custom](#Custom-customs)
 - [Features](#features)  
 - [Credits](#credits)  
 - [Author](#author)
@@ -40,7 +40,7 @@ This project supports several themes and color schemes that enhance your termina
 Thanks to the creators and communities behind these themes for their amazing work.
 
 ## Installation  
-To install `meow-colorscripts`, run the following commands in your terminal:  
+To install `custom-colorscripts`, run the following commands in your terminal:  
 
 ```bash
 git clone https://github.com/Lewenhart518/custom-colorscripts.git
@@ -57,7 +57,7 @@ clear && ./install.sh
 
 The installation script will automatically:  
 - Set up the required configuration folder.  
-- Move the configuration from `~/meow-colorscripts/.config/meow-colorscripts/` to `~/.config/meow-colorscripts/`.  
+- Move the configuration from `~/custom-colorscripts/.config/custom-colorscripts/` to `~/.config/custom-colorscripts/`.  
 - Copy necessary files (like `main.sh`).  
 - Ask if you want to open the interactive setup immediately.
 
@@ -65,7 +65,7 @@ The installation script will automatically:
 Customize your installation using:  
 
 ```bash
-meow-colorscripts-setup
+custom-colorscripts-setup
 ```  
 
 This command allows you to interactively choose your configuration options:  
@@ -84,7 +84,7 @@ During setup, responses are handled interactively:
 ## Update  
 _To update, follow this simple step:
 ```bash
-- custom-colorscripts-update
+custom-colorscripts-update
 ``` 
 
 ## Command List
@@ -106,19 +106,19 @@ The available commands are:
 3. **custom-colorscripts-setup**  
    - Launches an interactive menu that guides you through configuring your terminal art preferences. You'll be prompted to select a style and decide on extra features, and set up auto-run.
 
-4. **meow-colorscripts-names**
+4. **custom-colorscripts-names**
    - Displays a comprehensive list of the available ANSI art's. Use this command to see what art designs are available and choose one for display.
 
-5. **meow-colorscripts-show [style] [size] [name]**  (It only works if you chose it in the setup.)
+5. **custom-colorscripts-show [style] [size] [name]**  (It only works if you chose it in the setup.)
    - Use this command to display a specific ANSI art. For example:
      
-     `meow-colorscripts-show normal normal raspi`
+     `custom-colorscripts-show normal normal raspi`
      
      This command searches for the file at `~/.config/custom-colorscripts/colorscripts/normal/normal/raspi.txt`.  
-     If the file is missing, an error message will prompt you to check the available names using `custom-colorscripts-names` or visit the repository at [GitHub](https://github.com/Lewenhart518/meow-colorscripts) and will print the Error art.
+     If the file is missing, an error message will prompt you to check the available names using `custom-colorscripts-names` or visit the repository at [GitHub](https://github.com/Lewenhart518/custom-colorscripts) and will print the Error art.
 
 ## Custom ANSI Art
-you can make your own ANSI Art if you put your ANSI Art inside the directory ~/.config/custom-colorscripts/colorscripts/[style you chose]/[size]/ or to ~/.config/meow-colorscripts/colorscripts/custom/custom/ and view it with meow-colorscripts-show [name of your carpet] [name of your carpet] [name of your ANSI Art]
+you can make your own ANSI Art if you put your ANSI Art inside the directory ~/.config/custom-colorscripts/colorscripts/[style you chose]/[size]/ or to ~/.config/custom-colorscripts/colorscripts/custom/custom/ and view it with custom-colorscripts-show [name of your carpet] [name of your carpet] [name of your ANSI Art]
 
 ## Features  
 - High-quality ANSI art  
@@ -129,7 +129,7 @@ you can make your own ANSI Art if you put your ANSI Art inside the directory ~/.
 - Smart Resizing
 
 ## Credits  
-`meow-colorscripts` was born from the inspiration of amazing terminal customization projects. Special thanks to:
+`custom-colorscripts` was born from the inspiration of amazing terminal customization projects. Special thanks to:
 
 - **[Pokémon-Colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts)** – For its creative take on terminal colorscripts.
 
