@@ -2,9 +2,9 @@
 
 #────────────────────────────────────────────────────────── Color Section ─────
 export TERM=${TERM:-xterm-256color}
-GREEN='\033[38;2;143;188;187m'  # Nord Green
-RED='\033[38;2;191;97;106m'    # Nord Red
-CYAN='\033[38;2;136;192;208m'   # Nord Cyan
+GREEN='\033[38;2;143;188;187m'  
+RED='\033[38;2;191;97;106m'  
+CYAN='\033[38;2;136;192;208m'  
 NC='\033[0m'
 
 #───────────────────────────────────────────────────────── Path Variables ─────
@@ -23,11 +23,10 @@ else
     echo -e "󰚰 ${CYAN}Updating custom-colorscripts...${NC}"
 fi
 
-# 1. Entrar al repositorio y hacer Pull
 if [ -d "$REPO_DIR" ]; then
     cd "$REPO_DIR" || exit 1
     
-    # Intentar actualizar desde GitHub
+
     if git pull origin main; then
         if [ "$LANGUAGE" = "es" ]; then
             echo -e " ${GREEN}Repositorio actualizado desde GitHub.${NC}"
@@ -51,12 +50,9 @@ else
     exit 1
 fi
 
-# 2. Sincronizar solo la carpeta de arte y configuración
 CONFIG_SOURCE="$REPO_DIR/.config/custom-colorscripts"
 
 if [ -d "$CONFIG_SOURCE" ]; then
-    # Copiamos todo excepto el archivo de idioma y config personal para no borrarlos
-    # -u para copiar solo los archivos más nuevos o que no existan
     cp -ru "$CONFIG_SOURCE/"* "$CONFIG_DEST/"
     
     if [ "$LANGUAGE" = "es" ]; then
@@ -79,3 +75,5 @@ if [ "$LANGUAGE" = "es" ]; then
 else
     echo -e "\n${CYAN}All set. Enjoy the new art!${NC}"
 fi
+
+#I HATE EVERYTING 
