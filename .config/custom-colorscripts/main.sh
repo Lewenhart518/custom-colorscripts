@@ -1,17 +1,19 @@
 #!/bin/bash
 
-#───────────────────────────────────────────────────────── Path Variables ─────
+#───────────────────────────────────────────────────────── Variables ─────
 CONFIG_DIR="$HOME/.config/custom-colorscripts"
+# Ruta base donde vive el arte ahora
 ART_BASE="$CONFIG_DIR/colorscripts"
 CONFIG_FILE="$CONFIG_DIR/config.conf"
 LANG_FILE="$CONFIG_DIR/lang"
 ERROR_FILE="$ART_BASE/error.txt"
 
+# Colores para mensajes de sistema
 RED="\033[38;2;191;97;106m"
 CYAN="\033[38;2;136;192;208m"
 NC="\033[0m"
 
-#─────────────────────────────────────────────────────── Utility Functions ─────
+#─────────────────────────────────────────────────────── Idk how to call this part ─────
 show_art() {
     local file="$1"
     if [ -f "$file" ]; then
@@ -21,14 +23,14 @@ show_art() {
     fi
 }
 
-#─────────────────────────────────────────────────────── Language Setup ───────
+#─────────────────────────────────────────────────────── Language ───────
 [ -f "$LANG_FILE" ] && LANGUAGE=$(cat "$LANG_FILE") || LANGUAGE="en"
 
 print_msg() {
     if [ "$LANGUAGE" = "es" ]; then echo -e "$1"; else echo -e "$2"; fi
 }
 
-#─────────────────────────────────────────────────────── Load Configuration ───
+#─────────────────────────────────────────────────────── Configuration ───
 if [ ! -f "$CONFIG_FILE" ]; then
     if [ "$LANGUAGE" = "es" ]; then
         echo -e "${RED}✖ No se encontró el archivo de configuración.${NC}"
@@ -44,7 +46,7 @@ source "$CONFIG_FILE"
 MEOW_THEME="$CUSTOM_THEME"
 MEOW_SIZE="$CUSTOM_SIZE"
 
-#─────────────────────────────────────────────────────── Size Detection ───────
+#─────────────────────────────────────────────────────── Size ───────
 if [ "$MEOW_SIZE" = "auto" ]; then
     TERMWIDTH=$(tput cols)
     if [ "$TERMWIDTH" -lt 80 ]; then REAL_SIZE="small";
@@ -54,10 +56,13 @@ else
     REAL_SIZE="$MEOW_SIZE"
 fi
 
-#────────────────────────────────────────────────────────── Path Logic ────────
+#────────────────────────────────────────────────────────── Path ────────
+
 ART_DIR="$ART_BASE/$MEOW_THEME/$REAL_SIZE"
 
+
 if [ "$MEOW_THEME" = "random" ]; then
+   
     THEMES=($(ls -d "$ART_BASE"/*/ 2>/dev/null | xargs -n 1 basename 2>/dev/null))
     if [ ${#THEMES[@]} -gt 0 ]; then
         RANDOM_THEME=${THEMES[$RANDOM % ${#THEMES[@]}]}
@@ -65,7 +70,9 @@ if [ "$MEOW_THEME" = "random" ]; then
     fi
 fi
 
-#───────────────────────────────────────────────────────── Display Logic ──────
+#───────────────────────────────────────────────────────── Display the thing ──────
+
+
 if [ -n "$1" ]; then
     SPECIFIC_FILE="$ART_DIR/$1.txt"
     if [ -f "$SPECIFIC_FILE" ]; then
@@ -74,9 +81,11 @@ if [ -n "$1" ]; then
         show_art "$ERROR_FILE"
         print_msg "${RED}✖ No se encontró el arte: $1${NC}" "${RED}✖ Art not found: $1${NC}"
     fi
+#hi 
 else
     if [ -d "$ART_DIR" ]; then
         FILES=("$ART_DIR"/*.txt)
+
         if [ -e "${FILES[0]}" ]; then
             RANDOM_FILE=${FILES[RANDOM % ${#FILES[@]}]}
             show_art "$RANDOM_FILE"
@@ -89,6 +98,5 @@ else
         print_msg "${RED}✖ No existe la carpeta: $ART_DIR${NC}" "${RED}✖ Folder missing: $ART_DIR${NC}"
     fi
 fi
-
 
 #idk what its wrong T-T
