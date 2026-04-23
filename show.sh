@@ -11,7 +11,7 @@ NC="\033[0m"
 CONFIG_DIR="$HOME/.config/custom-colorscripts"
 LANG_FILE="$CONFIG_DIR/lang"
 
-# Detectar idioma
+# Hi
 [ -f "$LANG_FILE" ] && LANGUAGE=$(cat "$LANG_FILE") || LANGUAGE="en"
 
 #────────────────────────────────────────────────────── Utility Functions ─────
@@ -30,8 +30,6 @@ print_usage() {
 }
 
 #────────────────────────────────────────────────────────────── Logic ─────────
-
-# Validar que se pasen los 3 argumentos
 if [ "$#" -ne 3 ]; then
     print_usage
     exit 1
@@ -41,13 +39,11 @@ STYLE="$1"
 SIZE="$2"
 NAME="$3"
 
-# Ruta corregida incluyendo la carpeta intermedia 'colorscripts'
 ART_FILE="$CONFIG_DIR/colorscripts/$STYLE/$SIZE/$NAME.txt"
 
 if [ -f "$ART_FILE" ]; then
-    # LA CLAVE: echo -e interpreta las secuencias de escape ANSI del archivo
     echo -e "$(<"$ART_FILE")"
-    echo -e "" # Salto de línea extra
+    echo -e ""
 else
     # Error bilingüe
     if [ "$LANGUAGE" = "es" ]; then
@@ -59,3 +55,6 @@ else
     fi
     exit 1
 fi
+
+
+#Why are you reading this?
