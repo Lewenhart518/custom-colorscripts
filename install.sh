@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#────────────────────────────────────────────────────────── Color Section ─────
+#────────────────────────────────────────────────────────── Color Section EVERYTING NORD!!! ─────
 
 export TERM=${TERM:-xterm-256color}
 
@@ -18,7 +18,7 @@ CYAN="$NORD8"
 MAGENTA="$NORD10"
 NC='\033[0m'
 
-#────────────────────────────────────────────────────── Utility Functions ─────
+#────────────────────────────────────────────────────── Utility Functions? ─────
 
 print_msg() {
   if [ "$LANGUAGE" = "es" ]; then
@@ -68,10 +68,8 @@ print_msg "${GREEN}¡Idioma establecido!${NC}" "${GREEN}Language set!${NC}"
 
 #─────────────────────────────────────────────────────── Repository Check ─────
 
-# Mover la carpeta de de .config a ~/
 if [ -d "$LOCAL_REPO/.config/custom-colorscripts" ]; then
     print_dynamic_message "Sincronizando archivos de configuración" "Syncing configuration files"
-    # Sincroniza todo (incluyendo la carpeta colorscripts/ y el archivo names.txt)
     cp -rp "$LOCAL_REPO/.config/custom-colorscripts/"* "$CONFIG_DIR/"
 else
     print_msg "${RED}✖ Error: No se encontró la carpeta .config en el repositorio.${NC}" \
@@ -125,7 +123,7 @@ if [ -f "$LOCAL_REPO/show.sh" ]; then
   print_dynamic_message "custom-colorscripts-show instalado" "custom-colorscripts-show installed"
 fi
 
-# 5. Names Script
+# 5. Names Script (th thing that does... the other thing work)
 cat << 'EOF' > "$BIN_DIR/custom-colorscripts-names"
 #!/bin/bash
 CONFIG_DIR="$HOME/.config/custom-colorscripts"
